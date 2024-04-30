@@ -53,7 +53,7 @@ const Header = () => {
     return (
         <header className="md:flex bg-brandColor1">  {/* Use brandColor1 for background */}
             <div className="container mx-auto flex justify-between items-center bg-brandColor1 text-brandColor5 p-4">
-                <h1 className="text-lg text-brandColor4 font-bold">Next.js Boilerplate</h1>
+                <h1 className="text-lg text-brandColor4 font-bold">Listing Generator</h1>
                 <button className="text-brandColor4 md:hidden" onClick={() => setIsOpen(!isOpen)}>
                     <svg className="w-6 h-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M4 6h16M4 12h16m-7 6h7" />

@@ -81,7 +81,7 @@ const Dashboard = () => {
     if (!user) {
       fetchUserData();
     }
-  }, [user]);
+  }, [router, setUser, user]);
 
   return (
     <div className="bg-brandColor1 text-brandColor5 p-6">
