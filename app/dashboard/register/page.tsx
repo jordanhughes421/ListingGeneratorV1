@@ -82,7 +82,7 @@ const RegisterPage = () => {
 
       const data = await response.json();
       if (response.ok) {
-        router.push('dashboard/login'); // Redirect to login page on successful registration
+        router.push('/login'); // Redirect to login page on successful registration
       } else {
         throw new Error(data.message || 'Failed to register');
       }
