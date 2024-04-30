@@ -10,7 +10,10 @@ const Header = () => {
     const pathname = usePathname();
     const [error, setError] = useState<string>(''); // Explicitly type the error state as string
     const router = useRouter();
-    const onDashboard = pathname.startsWith('/dashboard');
+    const onDashboard = pathname.startsWith('/dashboard') &&
+                    !pathname.startsWith('/dashboard/login') &&
+                    !pathname.startsWith('/dashboard/register');
+
     const handleLogout = async () => {
         try {
           const response = await fetch('/api/auth/logout', {
