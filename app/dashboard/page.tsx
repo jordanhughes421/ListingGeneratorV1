@@ -11,8 +11,9 @@ const Dashboard = () => {
   const router = useRouter();
   const [error, setError] = useState<string>(''); // Explicitly type the error state as string
   const [keywords, setKeywords] = useState<string>('');
-  const [results, setResults] = useState<{titles: string, descriptions: string, keywords: string} | null>(null);
-
+  const [results, setResults] = useState<{titlesEtsy: string, descriptionsEtsy: string, keywordsEtsy: string} | null>(null);
+  const [shopName, setshopName] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false); 
 
   const fetchUserData = async () => {
     try {
@@ -46,13 +47,18 @@ const Dashboard = () => {
       setError('Please enter some keywords to generate content.');
       return;
     }
+    else if (!shopName) {
+      setError('Please enter some keywords to generate content.');
+      return;
+    }
     try {
+      setLoading(true);
       const response = await fetch('/api/generator', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ keywords }),
+        body: JSON.stringify({ shopName, keywords }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -67,6 +73,8 @@ const Dashboard = () => {
       } else {
         setError('An unexpected error occurred');
       }
+    } finally {
+      setLoading(false); // Set loading state back to false when request completes
     }
   };
 
@@ -77,25 +85,35 @@ const Dashboard = () => {
   }, [user]);
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {user?.name}</p>
-      <form onSubmit={handleSubmit}>
+    <div className="bg-brandColor1 text-brandColor5 p-6">
+      <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
+      <p>Welcome, <span className="text-brandColor4">{user?.name}</span></p>
+      <form onSubmit={handleSubmit} className="my-4">
+      <input
+          type="text"
+          value={shopName}
+          onChange={(e) => setshopName(e.target.value)}
+          placeholder="Enter Shop Name"
+          className="input bg-brandColor2 border border-brandColor3 text-brandColor5 placeholder-brandColor3 p-2 rounded-lg focus:ring-brandColor4 focus:border-brandColor4 m-2"
+        />
         <input
           type="text"
           value={keywords}
           onChange={(e) => setKeywords(e.target.value)}
           placeholder="Enter keywords"
+          className="input bg-brandColor2 border border-brandColor3 text-brandColor5 placeholder-brandColor3 p-2 rounded-lg focus:ring-brandColor4 focus:border-brandColor4 m-2"
         />
-        <button type="submit">Generate</button>
+        <button type="submit" className="ml-2 px-4 py-2 bg-brandColor5 text-brandColor1 font-semibold rounded-lg hover:bg-brandColor4">
+          {loading ? 'Generating...' : 'Generate'}
+        </button>
       </form>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error text-red-500">{error}</p>}
       {results && (
-        <div>
-          <h2>Generated Results</h2>
-          <p><strong>Title:</strong> {results.titles}</p>
-          <p><strong>Description:</strong> {results.descriptions}</p>
-          <p><strong>Keywords:</strong> {results.keywords}</p>
+        <div className="mt-4 p-4 bg-brandColor2 rounded-lg text-brandColor5">
+          <h2 className="text-lg font-semibold">Generated Results for Etsy</h2>
+          <p><strong>Title:</strong> {results.titlesEtsy}</p>
+          <p><strong>Description:</strong> {results.descriptionsEtsy}</p>
+          <p><strong>Keywords:</strong> {results.keywordsEtsy}</p>
         </div>
       )}
     </div>

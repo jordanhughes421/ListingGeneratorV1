@@ -9,7 +9,7 @@ const openai = new OpenAI({
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { keywords } = body;
+        const { shopName, keywords } = body;
 
         // Function to generate content for each request type
         const generateContent = async (content: string) => {
@@ -20,26 +20,33 @@ export async function POST(req: NextRequest) {
         };
 
         // Generate titles, descriptions, and keywords
-        const titlePromise = generateContent(`Generate an optimized title for: ${keywords}`);
-        const descriptionPromise = generateContent(`Generate a comprehensive description for: ${keywords}`);
-        const keywordPromise = generateContent(`Generate optimized keywords for: ${keywords}`);
+        const titlePromiseEtsy = generateContent(`Generate an optimized title for Etsy targeting the search words: ${keywords}. Etsy titles can be up to 140 characters long. It's important to use this space wisely to include critical keywords without making the title feel cluttered or spammy.`);
 
-        const [titleResponse, descriptionResponse, keywordResponse] = await Promise.all([
-            titlePromise,
-            descriptionPromise,
-            keywordPromise
+
+        const [titleResponseEtsy] = await Promise.all([
+            titlePromiseEtsy
         ]);
 
+
         // Extract text from responses
-        const titles = titleResponse.choices[0].message.content;
-        const descriptions = descriptionResponse.choices[0].message.content;
-        const keywordsGenerated = keywordResponse.choices[0].message.content;
+        const titlesEtsy = titleResponseEtsy.choices[0].message.content;
+
+        const descriptionPromiseEtsy = generateContent(`Generate a comprehensive description for an Etsy listing titled ${titlesEtsy}, targeting the search words: ${keywords}. The shop name is ${shopName}. Use emojis if possible.`);
+        const keywordPromiseEtsy = generateContent(`Generate optimized Etsy tags for a listing titled ${titlesEtsy} that are less than 19 characters as a comma separated list of 13 tags (not numbered please), targeting the search words: ${keywords}.`);
+
+        const [descriptionResponseEtsy, keywordResponseEtsy] = await Promise.all([
+            descriptionPromiseEtsy,
+            keywordPromiseEtsy
+        ]);
+
+        const descriptionsEtsy = descriptionResponseEtsy.choices[0].message.content;
+        const keywordsGeneratedEtsy = keywordResponseEtsy.choices[0].message.content;
 
         // Construct and send the response
         return new NextResponse(JSON.stringify({
-            titles,
-            descriptions,
-            keywords: keywordsGenerated
+            titlesEtsy,
+            descriptionsEtsy,
+            keywordsEtsy: keywordsGeneratedEtsy
         }), {
             status: 200,
             headers: {
