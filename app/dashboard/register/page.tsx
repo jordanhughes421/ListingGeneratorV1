@@ -108,7 +108,7 @@ const RegisterPage = () => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
-        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 focus:outline-none focus:border-brandColor4"
+        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 text-black focus:outline-none focus:border-brandColor4"
       />
     </div>
     <div>
@@ -119,7 +119,7 @@ const RegisterPage = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 focus:outline-none focus:border-brandColor4"
+        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 text-black focus:outline-none focus:border-brandColor4"
       />
     </div>
     <div>
@@ -130,7 +130,7 @@ const RegisterPage = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 focus:outline-none focus:border-brandColor4"
+        className="w-full lg:w-2/3 px-4 py-2 rounded border border-brandColor3 text-black focus:outline-none focus:border-brandColor4"
       />
     </div>
     <button type="submit" className="w-full lg:w-2/3 bg-brandColor4 text-white py-2 rounded hover:bg-brandColor3 transition duration-300">Register</button>
