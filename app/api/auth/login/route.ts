@@ -5,7 +5,6 @@ import { randomBytes } from 'crypto';
 import { addHours } from 'date-fns'; 
 
 
-
 //Login
 export async function POST(req: NextRequest) {
     const { email, submittiedpassword } = await req.json();
