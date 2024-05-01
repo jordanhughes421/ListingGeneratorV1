@@ -9,7 +9,16 @@ const openai = new OpenAI({
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { shopName, keywords } = body;
+        const { 
+            shopName, 
+            keywords, 
+            colors, 
+            sizes, 
+            materials, 
+            holiday, 
+            personalization, 
+            extraItems 
+        } = body;
 
         // Function to generate content for each request type
         const generateContent = async (content: string) => {
@@ -20,7 +29,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Generate titles, descriptions, and keywords
-        const titlePromiseEtsy = generateContent(`Generate an optimized title for Etsy targeting the search words: ${keywords}. Etsy titles can be up to 140 characters long. It's important to use this space wisely to include critical keywords without making the title feel cluttered or spammy.`);
+        const titlePromiseEtsy = generateContent(`Generate an optimized title for Etsy targeting the search words: ${keywords}. Etsy titles can be up to 140 characters long. It's important to use this space wisely to include critical keywords without making the title feel cluttered or spammy. The product is made from ${materials}.`);
 
 
         const [titleResponseEtsy] = await Promise.all([
@@ -31,7 +40,7 @@ export async function POST(req: NextRequest) {
         // Extract text from responses
         const titlesEtsy = titleResponseEtsy.choices[0].message.content;
 
-        const descriptionPromiseEtsy = generateContent(`Generate a comprehensive description for an Etsy listing titled ${titlesEtsy}, targeting the search words: ${keywords}. The shop name is ${shopName}. Use emojis if possible.`);
+        const descriptionPromiseEtsy = generateContent(`Generate a comprehensive description for an Etsy listing titled ${titlesEtsy}, targeting the search words: ${keywords}. The shop name is ${shopName}. Use emojis if possible. The product has the following details: color(s):${colors}; size(s):${sizes}; material(s):${materials}; holiday(s):${holiday}; personalization info:${personalization}; extra items included:${extraItems};`);
         const keywordPromiseEtsy = generateContent(`Generate optimized Etsy tags for a listing titled ${titlesEtsy} that are less than 19 characters as a comma separated list of 13 tags (not numbered please), targeting the search words: ${keywords}.`);
 
         const [descriptionResponseEtsy, keywordResponseEtsy] = await Promise.all([
