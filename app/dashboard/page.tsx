@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from './user-provider';
 import { useRouter } from 'next/navigation';
-
+import DOMPurify from 'dompurify';
+import Image from 'next/image';
 
 
 const Dashboard = () => {
@@ -21,20 +22,19 @@ const Dashboard = () => {
   const [personalization, setPersonalization] = useState<boolean>(false);
   const [personalizationDetails, setPersonalizationDetails] = useState<string>('');
   const [extraItems, setExtraItems] = useState<string>('');
+  const [platform, setPlatform] = useState<string>('etsy');
+  const [platformDisplay, setPlatformDisplay] = useState<string>('etsy');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!keywords) {
-      setError('Please enter some keywords to generate content.');
-      return;
-    }
-    else if (!shopName) {
-      setError('Please enter some keywords to generate content.');
+    if (!keywords || !shopName) {
+      setError('Please enter the shop/store name and keywords to generate content.');
       return;
     }
     try {
       setLoading(true);
-      const response = await fetch('/api/generator', {
+      const apiUrl = '/api/generator/' + platform;
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,6 +53,7 @@ const Dashboard = () => {
       const data = await response.json();
       if (response.ok) {
         setResults(data);
+        setPlatformDisplay(platform);
         setError('');
       } else {
         throw new Error(data.message || 'Failed to generate content');
@@ -64,7 +65,7 @@ const Dashboard = () => {
         setError('An unexpected error occurred');
       }
     } finally {
-      setLoading(false); // Set loading state back to false when request completes
+      setLoading(false);
     }
   };
 
@@ -99,6 +100,10 @@ const Dashboard = () => {
     }
   }, [router, setUser, user]);
 
+  const createMarkup = (htmlContent: string) => {
+    return { __html: DOMPurify.sanitize(htmlContent) };
+  };
+
   return (
   <div className="bg-brandColor1 text-brandColor5 p-6">
     <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
@@ -108,6 +113,26 @@ const Dashboard = () => {
       {/* Form Section */}
       <div className="flex-1 text-center">
         <form onSubmit={handleSubmit} className="my-4 space-y-2">
+        {/* Platform Selection */}
+        <div className="mb-4 flex">
+          <button
+            type="button"
+            onClick={() => setPlatform('etsy')}
+            className={`flex items-center px-4 py-2 mr-6 ${platform === 'etsy' ? 'bg-brandColor4 text-white ring ring-brandColor5' : 'bg-brandColor2 text-brandColor5'}`}
+          >
+            <Image src="/etsylogo.png" width={36} height={36} alt="Etsy Logo" className='rounded-lg mr-2'/>
+            <p>Etsy</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPlatform('amazon')}
+            className={`flex items-center px-4 py-2 ${platform === 'amazon' ? 'bg-brandColor4 text-white ring ring-brandColor5' : 'bg-brandColor2 text-brandColor5'}`}
+          >
+            <Image src="/amazonlogo.jpg" width={36} height={36} alt="Amazon Logo" className='rounded-lg mr-2'/>
+            <p>Amazon</p>
+          </button>
+        </div>
+
           <input
             type="text"
             value={shopName}
@@ -184,12 +209,20 @@ const Dashboard = () => {
 
       {/* Results Section */}
       <div className="flex-1 mt-4">
-        {results && (
-          <div className="p-4 bg-brandColor2 rounded-lg text-brandColor5">
-            <h2 className="text-lg font-semibold">Generated Results for Etsy</h2>
-            <p><strong>Title:</strong> {results.titlesEtsy}</p>
-            <p><strong>Description:</strong> {results.descriptionsEtsy}</p>
-            <p><strong>Keywords:</strong> {results.keywordsEtsy}</p>
+        {loading ? (
+        <div className="flex justify-center items-center">
+          <div className="loader"></div>
+        </div>
+        ) : (
+          <div>
+            {results && (
+              <div className="p-4 bg-brandColor2 rounded-lg text-brandColor5">
+                <h2 className="text-lg font-semibold">Generated Results for {platformDisplay.charAt(0).toUpperCase() + platformDisplay.slice(1)}</h2>
+                <div><strong>Title:</strong> {results.titlesEtsy}</div>
+                <div>{platformDisplay === 'etsy' && <strong>Description:</strong>} <div dangerouslySetInnerHTML={createMarkup(results.descriptionsEtsy)} /></div>
+                <div><strong>Keywords:</strong> {results.keywordsEtsy}</div>
+              </div>
+            )}
           </div>
         )}
       </div>

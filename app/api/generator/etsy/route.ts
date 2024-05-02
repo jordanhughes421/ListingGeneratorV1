@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         };
 
         // Generate titles, descriptions, and keywords
-        const titlePromiseEtsy = generateContent(`Generate an optimized title for Etsy targeting the search words: ${keywords}. Etsy titles can be up to 140 characters long. It's important to use this space wisely to include critical keywords without making the title feel cluttered or spammy. The product is made from ${materials}.`);
+        const titlePromiseEtsy = generateContent(`Generate an optimized title for Etsy targeting the search words: ${keywords}. Etsy titles can be up to 140 characters long. It's important to use this space wisely to include critical keywords without making the title feel cluttered or spammy. The product is made from ${materials}, but try not to use the material in the title.`);
 
 
         const [titleResponseEtsy] = await Promise.all([
